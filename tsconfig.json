@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "target": "ES5",
+      "lib": [
+        "es6","DOM"
+      ],
+      "module": "ESNext",
+      "allowJs": true,
+      "moduleResolution":"node",
+    },
+    "exclude": [
+      "node_modules","lib"
+    ],
+    "include": [
+      "src/**/*"
+, "main.d.ts"    ]
+  }
