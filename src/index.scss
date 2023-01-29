@@ -1,8 +1,27 @@
-#gcomment {
+#gcomment,
+.test {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
     'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
     sans-serif;
+
+  .d-flex {
+    display: flex !important;
+
+    &.justyfy-content-between {
+      justify-content: space-between;
+    }
+  }
+
+  .btn-icon-text {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    height: auto;
+    line-height: inherit;
+    padding: 0;
+    cursor: pointer;
+  }
 
   .g-comment-btn {
     position: relative;
