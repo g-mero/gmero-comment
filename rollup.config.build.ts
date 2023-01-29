@@ -14,7 +14,7 @@ export default {
     format: 'iife',
     name: 'gcomment',
     sourcemap: false,
-    globals: { axios: 'axios', 'tippy.js': 'tippy' },
+    globals: { 'tippy.js': 'tippy' },
   },
   plugins: [
     typescript(),
@@ -32,5 +32,5 @@ export default {
     }),
     terser(),
   ],
-  external: ['tippy.js', 'axios'],
+  external: ['tippy.js'],
 }
