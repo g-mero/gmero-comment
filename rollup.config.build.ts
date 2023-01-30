@@ -27,6 +27,7 @@ export default {
       exclude: 'node_modules/**',
     }),
     postcss({
+      modules: true,
       plugins: [autoprefixer(), cssnano()],
       extract: 'css/index.css',
     }),
