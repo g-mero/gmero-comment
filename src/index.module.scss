@@ -1,0 +1,117 @@
+#gcomment,
+.test {
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
+    sans-serif;
+
+  .d-flex {
+    display: flex !important;
+
+    &.justyfy-content-between {
+      justify-content: space-between;
+    }
+  }
+
+  .w-100 {
+    width: 100% !important;
+  }
+
+  .btn-icon-text {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    height: auto;
+    line-height: inherit;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .g-comment-btn {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50px;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    white-space: nowrap;
+    user-select: none;
+    transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+    font-size: 14px;
+    padding: 4px 12px;
+    color: #fff;
+    background-color: #ec7259;
+    border: 1px solid #ec7259;
+  }
+
+  textarea {
+    font-family: inherit;
+    box-sizing: border-box;
+    padding: 12px 16px;
+    width: 100%;
+    height: 90px;
+    font-size: 13px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    background-color: #fafafa;
+    resize: none;
+    display: inline-block;
+    vertical-align: top;
+    outline-style: none;
+
+    &::-webkit-input-placeholder {
+      opacity: 0.5;
+      user-select: none;
+    }
+  }
+
+  .g-comment-textarea-tools {
+    max-height: 3rem;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0, 1, 0.5, 1);
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.4rem;
+
+    &.close {
+      max-height: 0;
+    }
+  }
+
+  .g-comment-avatar,
+  .g-comment-login {
+    width: 40px;
+    height: 40px;
+    margin-right: 0.4rem;
+    cursor: pointer;
+
+    img,
+    svg {
+      width: 100%;
+      border-radius: 50%;
+    }
+  }
+
+  .a-comment {
+    padding-bottom: 0.7rem;
+    .children-comments {
+      padding-left: 2rem;
+    }
+  }
+
+  .single-comment {
+    padding-bottom: 0.5rem;
+  }
+}
+
+// tooltips箭头变小
+.tippy-box > .tippy-arrow::before {
+  transform: scale(0.7);
+}
+
+.tippy-box {
+  font-size: 0.7rem;
+}

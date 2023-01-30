@@ -1,8 +1,8 @@
 import tippy from 'tippy.js'
-import 'tippy.js/dist/tippy.css'
-import './index.scss'
 import cmt_textarea, { setAvatar, setAvatarBtn } from './modules/cmt-textarea'
-import { convertIt } from './modules/grammar'
+import cmt_showcase, { testcomments } from './modules/comments'
+
+import styles from './index.module.scss'
 
 export default function ssss(config: {
   elid?: string //可选，elementid
@@ -26,16 +26,21 @@ export default function ssss(config: {
     console.log('没有找到element')
     return
   }
+  $comment_area.id = styles.gcomment
   // 处理结束
 
   // 生成评论编辑区域
   $comment_area.append(cmt_textarea(config.onAvatarBtn, config.onPostBtn))
+
+  // 评论展示区域
+  $comment_area.append(cmt_showcase(testcomments))
 
   tippy('[data-tippy-content]', {
     offset: [0, 6],
     placement: 'auto',
   })
 
+  // 返回一个包含了基本方法的对象
   return {
     element: $comment_area,
     setAavatar: setAvatar,
