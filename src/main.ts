@@ -1,6 +1,6 @@
 import tippy from 'tippy.js'
 import cmt_textarea, { setAvatar, setAvatarBtn } from './modules/cmt-textarea'
-import cmt_showcase, { testcomments } from './modules/comments'
+import cmt_showcase, { comment_g, testcomments } from './modules/comments'
 
 import styles from './index.module.scss'
 
@@ -26,14 +26,14 @@ export default function ssss(config: {
     console.log('没有找到element')
     return
   }
-  $comment_area.id = styles.gcomment
+  $comment_area.classList.add(styles['gcomment-main'])
   // 处理结束
 
   // 生成评论编辑区域
   $comment_area.append(cmt_textarea(config.onAvatarBtn, config.onPostBtn))
 
   // 评论展示区域
-  $comment_area.append(cmt_showcase(testcomments))
+  $comment_area.append(cmt_showcase())
 
   tippy('[data-tippy-content]', {
     offset: [0, 6],
@@ -45,5 +45,6 @@ export default function ssss(config: {
     element: $comment_area,
     setAavatar: setAvatar,
     setAvatarBtn: setAvatarBtn,
+    setComments: cmt_showcase,
   }
 }

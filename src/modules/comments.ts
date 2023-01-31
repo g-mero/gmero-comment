@@ -3,7 +3,7 @@ import { wrap_by_div } from './utils'
 
 import styles from '../index.module.scss'
 
-interface comment_g {
+export interface comment_g {
   nickname: string
   avatar_url: string
   content: string
@@ -92,12 +92,20 @@ const gen_acomment_with_children = (cmt: comment_g) => {
   return $comment
 }
 
-export default function (comments: comment_g[]) {
-  const gcomment: Element[] = []
-  comments.forEach((v) => {
-    gcomment.push(gen_acomment_with_children(v))
-  })
-  const $output = wrap_by_div(...gcomment)
+const $output = document.createElement('div')
+
+export default function (comments?: comment_g[]) {
+  if (comments == void 0 || comments.length < 1)
+    $output.innerHTML = `<span>没有评论</span>`
+  else {
+    const gcomment: Element[] = []
+    comments.forEach((v) => {
+      gcomment.push(gen_acomment_with_children(v))
+    })
+    const $tmp = wrap_by_div(...gcomment)
+
+    $output.innerHTML = $tmp.innerHTML
+  }
 
   return $output
 }

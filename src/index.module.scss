@@ -1,4 +1,4 @@
-#gcomment,
+.gcomment-main,
 .test {
   font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
@@ -107,11 +107,13 @@
   }
 }
 
-// tooltips箭头变小
-.tippy-box > .tippy-arrow::before {
-  transform: scale(0.7);
-}
+:global {
+  // tooltips箭头变小
+  .tippy-box > .tippy-arrow::before {
+    transform: scale(0.7);
+  }
 
-.tippy-box {
-  font-size: 0.7rem;
+  .tippy-box {
+    font-size: 0.7rem;
+  }
 }
