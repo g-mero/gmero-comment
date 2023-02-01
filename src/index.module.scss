@@ -1,9 +1,7 @@
 .gcomment-main,
 .test {
-  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
-    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial,
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Segoe UI', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   .d-flex {
     display: flex !important;
@@ -104,6 +102,13 @@
 
   .single-comment {
     padding-bottom: 0.5rem;
+  }
+
+  .toolbar-comments {
+    margin-bottom: 1rem;
+    margin-top: 0.3rem;
+    font-size: 1.2rem;
+    font-weight: 600;
   }
 }
 

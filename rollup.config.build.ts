@@ -27,7 +27,9 @@ export default {
       exclude: 'node_modules/**',
     }),
     postcss({
-      modules: true,
+      modules: {
+        generateScopedName: "gcss_[hash:base64:5]",
+      },
       plugins: [autoprefixer(), cssnano()],
       extract: 'css/index.css',
     }),
