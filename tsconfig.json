@@ -14,7 +14,6 @@
     "noUnusedParameters": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "rootDir": "src",
     "baseUrl": ".",
     "allowJs": true,
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
