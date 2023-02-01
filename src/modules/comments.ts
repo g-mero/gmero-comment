@@ -30,8 +30,16 @@ const testCommentsChild: comment_g = {
   children: [testcomment, testcomment],
 }
 
+/**
+ * 测试用例
+ */
 export const testcomments: comment_g[] = [testCommentsChild, testcomment]
 
+/**
+ * 生成评论或回复的单个element
+ * @param cmt - 评论对象
+ * @returns 评论element
+ */
 const genOneComment = (cmt: comment_g) => {
   const $comment = document.createElement('div')
   $comment.classList.add(styles['d-flex'], styles['single-comment'])
@@ -62,6 +70,11 @@ const genOneComment = (cmt: comment_g) => {
   return $comment
 }
 
+/**
+ * 生产当前评论的评论内容及回复
+ * @param cmt -评论对象
+ * @returns 评论的element
+ */
 const genComments = (cmt: comment_g) => {
   const $comment = wrapByDiv(genOneComment(cmt))
   $comment.classList.add(styles['a-comment'])
@@ -80,7 +93,27 @@ const genComments = (cmt: comment_g) => {
   return $comment
 }
 
+/**
+ * 评论展示区域element的全局变量，方便更新
+ */
 const $output = document.createElement('div')
+
+/**
+ * 评论展示去顶部的信息栏，显示评论数以及切换显示模式
+ */
+const $toolbar = document.createElement('div')
+$toolbar.classList.add(styles['d-flex'], styles['justyfy-content-between'], styles['toolbar-comments'])
+
+/**
+ * 生成或修改顶部toolbar信息展示
+ * @param num - 评论的总数
+ * @returns $toolbar
+ */
+function genToolBar(num: number): Element {
+  $toolbar.innerHTML = `<div>${num} 条评论</div><div></div>`
+  return $toolbar
+}
+
 /**
  * 生成评论展示区域
  *
@@ -88,14 +121,16 @@ const $output = document.createElement('div')
  * @returns element of comments
  *
  */
-export default function cmtShowcase(comments?: comment_g[]) {
-  if (comments === undefined || comments.length < 1) $output.innerHTML = `<span>没有评论</span>`
-  else {
+export default function cmtShowcase(comments?: comment_g[], total?: number) {
+  if (comments === undefined || comments.length < 1 || total === undefined || total === 0) {
+    const $tmp = wrapByDiv(genToolBar(0))
+    $output.innerHTML = $tmp.innerHTML
+  } else {
     const gcomment: Element[] = []
     comments.forEach((v) => {
       gcomment.push(genComments(v))
     })
-    const $tmp = wrapByDiv(...gcomment)
+    const $tmp = wrapByDiv(genToolBar(total), ...gcomment)
 
     $output.innerHTML = $tmp.innerHTML
   }
