@@ -31,9 +31,11 @@ export function convertIt(content: string) {
     return str.replace(reg, handleLink)
   }
 
-  let output = transLinks(content) || content
+  let output = content
 
-  output = transLinkEmail(content) || content
+  output = transLinks(output) || output
+
+  output = transLinkEmail(output) || output
 
   return output
 }
