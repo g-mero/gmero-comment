@@ -1,18 +1,24 @@
 {
-    "compilerOptions": {
-      "target": "ES5",
-      "lib": [
-        "es6","DOM"
-      ],
-      "module": "ESNext",
-      "allowJs": true,
-      "moduleResolution":"node",
-      "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    },
-    "exclude": [
-      "node_modules","lib"
-    ],
-    "include": [
-      "src/**/*"
-, "main.d.ts"    ]
-  }
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "ES2015",
+    "lib": ["esnext", "dom"],
+    "strict": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedParameters": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "rootDir": "src",
+    "baseUrl": ".",
+    "allowJs": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
+  },
+  "exclude": ["node_modules", "lib", "test", "lib"],
+  "include": ["src/**/*", "main.d.ts"]
+}

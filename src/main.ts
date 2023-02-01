@@ -1,39 +1,39 @@
+/* eslint-disable no-console */
 import tippy from 'tippy.js'
-import cmt_textarea, { setAvatar, setAvatarBtn } from './modules/cmt-textarea'
-import cmt_showcase, { comment_g, testcomments } from './modules/comments'
+import CmtTextarea, { setAvatar, setAvatarBtn } from './modules/cmt-textarea'
+import cmtShowcase from './modules/comments'
 
 import styles from './index.module.scss'
 
-export default function ssss(config: {
-  elid?: string //可选，elementid
-  onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => any // 发送评论按钮
-  onAvatarBtn: (this: GlobalEventHandlers, ev: MouseEvent) => any // 点击头像
-  onDeleteBtn?: (this: GlobalEventHandlers, ev: MouseEvent) => any // 删除评论
-  onUpdateBtn?: (this: GlobalEventHandlers, ev: MouseEvent) => any // 更新评论
-}) {
+export default function gcomment(config: {
+  elid?: string // 可选，elementid
+  onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void // 发送评论按钮
+  onAvatarBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void // 点击头像
+  onDeleteBtn?: (comment_id: number) => void // 删除评论
+  onUpdateConfirmBtn?: (comment_id: number, content: string) => void // 更新评论
+  onReplyPostBtn?: (commrnt_id: number, content: string) => void // 回复评论
+  onLikeBtn?: (comment_id: number, bool: boolean) => void // 点赞评论
+}): object {
   // 配置项初始化处理
-  const _ERRMSG_INIT_FAIL_ = 'error: 关键项没有设置 comment 初始化失败'
-  if (config === void 0) {
-    console.log(_ERRMSG_INIT_FAIL_)
-    return
+  const errorMsgInitFail = 'error: 关键项没有设置 comment 初始化失败'
+  if (config === undefined || config.onPostBtn === undefined || config.onAvatarBtn === undefined) {
+    console.log(errorMsgInitFail)
+    return {}
   }
-  config.elid = config.elid || 'gcomment'
-  config.onPostBtn = config.onPostBtn || void 0
-  config.onAvatarBtn = config.onAvatarBtn || void 0
 
-  const $comment_area = document.getElementById(config.elid)
-  if (!$comment_area) {
+  const $commentArea = document.getElementById(config.elid || 'gcomment')
+  if (!$commentArea) {
     console.log('没有找到element')
-    return
+    return {}
   }
-  $comment_area.classList.add(styles['gcomment-main'])
+  $commentArea.classList.add(styles['gcomment-main'])
   // 处理结束
 
   // 生成评论编辑区域
-  $comment_area.append(cmt_textarea(config.onAvatarBtn, config.onPostBtn))
+  $commentArea.append(CmtTextarea(config.onAvatarBtn, config.onPostBtn))
 
   // 评论展示区域
-  $comment_area.append(cmt_showcase())
+  $commentArea.append(cmtShowcase())
 
   tippy('[data-tippy-content]', {
     offset: [0, 6],
@@ -42,9 +42,9 @@ export default function ssss(config: {
 
   // 返回一个包含了基本方法的对象
   return {
-    element: $comment_area,
+    element: $commentArea,
     setAavatar: setAvatar,
-    setAvatarBtn: setAvatarBtn,
-    setComments: cmt_showcase,
+    setAvatarBtn,
+    setComments: cmtShowcase,
   }
 }

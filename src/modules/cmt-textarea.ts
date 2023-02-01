@@ -1,16 +1,16 @@
 import tippy from 'tippy.js'
-import { wrap_by_div } from './utils'
+import { wrapByDiv } from './utils'
 
 import styles from '../index.module.scss'
 
 const $textarea = document.createElement('textarea')
 $textarea.setAttribute('placeholder', '留下你的评论...')
 
-const $btn_confirm = document.createElement('button')
-$btn_confirm.type = 'button'
-$btn_confirm.innerText = '确定'
-$btn_confirm.setAttribute('data-tippy-content', '点击发送')
-$btn_confirm.classList.add(styles['g-comment-btn'])
+const $btnConfirm = document.createElement('button')
+$btnConfirm.type = 'button'
+$btnConfirm.innerText = '确定'
+$btnConfirm.setAttribute('data-tippy-content', '点击发送')
+$btnConfirm.classList.add(styles['g-comment-btn'])
 
 const $avatar = document.createElement('div')
 $avatar.classList.add(styles['g-comment-login'])
@@ -27,51 +27,45 @@ $info.innerHTML = `<span style="opacity: .34;font-size: .65rem;position:relative
 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
 </svg> 免责声明</span>`
 
-export default function (
-  onAvatarBtn: (this: GlobalEventHandlers, ev: MouseEvent) => any,
-  onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => any,
+export default function cmtTextarea(
+  onAvatarBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void,
+  onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void
 ) {
   // 评论编辑工具栏
-  const $textarea_tools = wrap_by_div(wrap_by_div($info), $btn_confirm)
-  $textarea_tools.classList.add(
-    styles['g-comment-textarea-tools'],
-    styles.close,
-  )
+  const $textareaTools = wrapByDiv(wrapByDiv($info), $btnConfirm)
+  $textareaTools.classList.add(styles['g-comment-textarea-tools'], styles.close)
 
   // textarea_c 评论编辑区域
-  const $textarea_c = wrap_by_div($textarea, $textarea_tools)
-  $textarea_c.style.width = '100%'
+  const $textareaEdit = wrapByDiv($textarea, $textareaTools)
+  $textareaEdit.style.width = '100%'
 
-  $textarea_tools.onmousedown = (e) => {
+  $textareaTools.onmousedown = (e) => {
     e.preventDefault()
   }
 
   $textarea.onfocus = () => {
-    $textarea.setAttribute(
-      'placeholder',
-      '支持部分MD语法(如 链接,邮箱等),不支持html标签...',
-    )
-    $textarea_tools.classList.remove(styles.close)
+    $textarea.setAttribute('placeholder', '支持部分MD语法(如 链接,邮箱等),不支持html标签...')
+    $textareaTools.classList.remove(styles.close)
   }
   $textarea.onblur = () => {
     $textarea.setAttribute('placeholder', '留下你的评论...')
 
-    if ($textarea.value == '') {
-      $textarea_tools.classList.add(styles.close)
+    if ($textarea.value === '') {
+      $textareaTools.classList.add(styles.close)
     }
   }
 
   // 点击确认按钮
-  $btn_confirm.onclick = onPostBtn
+  $btnConfirm.onclick = onPostBtn
 
   // $avatar 头像区域
   $avatar.onclick = onAvatarBtn
 
-  const co_text = `<span style="font-size:.65rem">本评论组件会获取用户GitHub的基本信息（包括email）以保证评论及回复的有效性，当前版本0.0.1</span>`
+  const coText = `<span style="font-size:.65rem">本评论组件会获取用户GitHub的基本信息（包括email）以保证评论及回复的有效性，当前版本0.0.1</span>`
   tippy($info, {
     offset: [0, 6],
     placement: 'auto',
-    content: co_text,
+    content: coText,
     allowHTML: true,
     trigger: 'click',
     interactive: true,
@@ -79,27 +73,25 @@ export default function (
 
   const $top = document.createElement('div')
   $top.style.display = 'flex'
-  $top.append(wrap_by_div($avatar))
-  $top.append($textarea_c)
+  $top.append(wrapByDiv($avatar))
+  $top.append($textareaEdit)
 
   return $top
 }
 
-const avatar_login_inner = $avatar.innerHTML
+const avatarInner = $avatar.innerHTML
 export function setAvatar(html?: string) {
-  if (html === void 0) {
-    $avatar.innerHTML = avatar_login_inner
+  if (html === undefined) {
+    $avatar.innerHTML = avatarInner
     return
   }
   $avatar.innerHTML = html
 }
 
-export function setAvatarBtn(
-  func?: (this: GlobalEventHandlers, ev: MouseEvent) => any,
-) {
-  if (func !== void 0) {
+export function setAvatarBtn(func?: (this: GlobalEventHandlers, ev: MouseEvent) => void) {
+  if (func !== undefined) {
     $avatar.onclick = func
     return
   }
-  $avatar.onclick = void 0
+  $avatar.onclick = null
 }
