@@ -2,14 +2,12 @@ import babel from '@rollup/plugin-babel'
 import resolve from '@rollup/plugin-node-resolve'
 import typescript from '@rollup/plugin-typescript'
 import commonjs from '@rollup/plugin-commonjs'
-import terser from '@rollup/plugin-terser'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
-import cssnano from 'cssnano'
 
-export default {
+export default [{
   input: './src/main.ts',
   output: {
     file: './dist/gmero-comment.js',
@@ -32,14 +30,13 @@ export default {
       modules: {
         generateScopedName: "[local]___[hash:base64:5]",
       },
-      plugins: [autoprefixer(), cssnano()],
+      plugins: [autoprefixer()],
       extract: 'css/index.css',
     }),
-    terser(),
     livereload(),
     serve({
       contentBase: ['test', 'dist', 'lib'],
     }),
   ],
   external: ['tippy.js'],
-}
+}]

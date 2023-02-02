@@ -6,11 +6,12 @@ import terser from '@rollup/plugin-terser'
 import postcss from 'rollup-plugin-postcss'
 import autoprefixer from 'autoprefixer'
 import cssnano from 'cssnano'
+import dts from 'rollup-plugin-dts'
 
-export default {
+export default [{
   input: './src/main.ts',
   output: {
-    file: './dist/gmero-comment.js',
+    file: './dist/build/gmero-comment.min.js',
     format: 'iife',
     name: 'gcomment',
     sourcemap: false,
@@ -31,9 +32,13 @@ export default {
         generateScopedName: "gcss_[hash:base64:5]",
       },
       plugins: [autoprefixer(), cssnano()],
-      extract: 'css/index.css',
+      extract: 'gmero-comment.min.css',
     }),
     terser(),
   ],
   external: ['tippy.js'],
-}
+},{
+  input: './src/main.ts',
+  output: [{ file: "dist/build/gmero-comment.d.ts", format: "es" }],
+  plugins: [dts()],
+}]

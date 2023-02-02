@@ -18,6 +18,6 @@
     "allowJs": true,
     "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
-  "exclude": ["node_modules", "lib", "test", "lib"],
+  "exclude": ["node_modules", "lib", "test", "dist"],
   "include": ["src/**/*", "main.d.ts"]
 }
