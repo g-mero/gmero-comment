@@ -27,10 +27,7 @@ $info.innerHTML = `<span style="opacity: .34;font-size: .65rem;position:relative
 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
 </svg> 免责声明</span>`
 
-export default function cmtTextarea(
-  onAvatarBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void,
-  onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void
-) {
+export default function cmtTextarea(onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void) {
   // 评论编辑工具栏
   const $textareaTools = wrapByDiv(wrapByDiv($info), $btnConfirm)
   $textareaTools.classList.add(styles['g-comment-textarea-tools'], styles.close)
@@ -58,9 +55,6 @@ export default function cmtTextarea(
   // 点击确认按钮
   $btnConfirm.onclick = onPostBtn
 
-  // $avatar 头像区域
-  $avatar.onclick = onAvatarBtn
-
   const coText = `<span style="font-size:.65rem">本评论组件会获取用户GitHub的基本信息（包括email）以保证评论及回复的有效性，当前版本0.0.1</span>`
   tippy($info, {
     offset: [0, 6],
@@ -82,9 +76,15 @@ export default function cmtTextarea(
 const avatarInner = $avatar.innerHTML
 export function setAvatar(html?: string) {
   if (html === undefined) {
+    $avatar.setAttribute('data-tippy-content', '使用GITHUB账号登录')
     $avatar.innerHTML = avatarInner
     return
   }
+  $avatar.removeAttribute('data-tippy-content')
+  tippy('[data-tippy-content]', {
+    offset: [0, 6],
+    placement: 'auto',
+  })
   $avatar.innerHTML = html
 }
 
