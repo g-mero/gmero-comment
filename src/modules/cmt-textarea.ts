@@ -9,15 +9,40 @@ $textarea.setAttribute('placeholder', '留下你的评论...')
 const $btnConfirm = document.createElement('button')
 $btnConfirm.type = 'button'
 $btnConfirm.innerText = '确定'
-$btnConfirm.setAttribute('data-tippy-content', '点击发送')
 $btnConfirm.classList.add(styles['g-comment-btn'])
 
 const $avatar = document.createElement('div')
 $avatar.classList.add(styles['g-comment-login'])
-$avatar.setAttribute('data-tippy-content', '使用GITHUB账号登录')
-$avatar.innerHTML = `<svg aria-hidden="true" viewBox="0 0 16 16" version="1.1" data-view-component="true">
+const githubSvgHtmlStr = `<svg aria-hidden="true" viewBox="0 0 16 16" version="1.1" data-view-component="true">
 <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
 </svg>`
+let avatarDefaultInner = githubSvgHtmlStr
+const avatarTippy = tippy($avatar, {
+  content: 'hello tippy',
+  offset: [0, 6],
+  placement: 'auto',
+})
+
+/**
+ * 设置Avatar区域内容
+ * @param html html代码 为空则显示默认内容
+ * @param tippyContent 提示内容 为空则不提示
+ * @returns void
+ */
+export function setAvatar(html = avatarDefaultInner, tippyContent = '') {
+  $avatar.innerHTML = html
+  if (tippyContent === '' && avatarTippy.state.isEnabled) avatarTippy.disable()
+  else if (tippyContent !== '' && !avatarTippy.state.isEnabled) avatarTippy.enable()
+  avatarTippy.setContent(tippyContent)
+}
+
+export function setAvatarBtn(func?: (this: GlobalEventHandlers, ev: MouseEvent) => void) {
+  if (func !== undefined) {
+    $avatar.onclick = func
+    return
+  }
+  $avatar.onclick = null
+}
 
 // 免责声明
 const $info = document.createElement('div')
@@ -27,7 +52,16 @@ $info.innerHTML = `<span style="opacity: .34;font-size: .65rem;position:relative
 <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
 </svg> 免责声明</span>`
 
-export default function cmtTextarea(onPostBtn: (this: GlobalEventHandlers, ev: MouseEvent) => void) {
+export default function cmtTextarea(onPostBtn: (content: string) => void, avatarHtmlDefault = avatarDefaultInner, defaultTippy = '') {
+  /* 头像区域处理 */
+  // 设置头像默认内容
+  $avatar.innerHTML = avatarHtmlDefault
+  avatarDefaultInner = avatarHtmlDefault
+  // 设置头像提示信息
+  if (defaultTippy !== '') avatarTippy.setContent(defaultTippy)
+  else avatarTippy.disable()
+  /* 头像区域处理end */
+
   // 评论编辑工具栏
   const $textareaTools = wrapByDiv(wrapByDiv($info), $btnConfirm)
   $textareaTools.classList.add(styles['g-comment-textarea-tools'], styles.close)
@@ -53,7 +87,9 @@ export default function cmtTextarea(onPostBtn: (this: GlobalEventHandlers, ev: M
   }
 
   // 点击确认按钮
-  $btnConfirm.onclick = onPostBtn
+  $btnConfirm.onclick = () => {
+    onPostBtn($textarea.value)
+  }
 
   const coText = `<span style="font-size:.65rem">本评论组件会获取用户GitHub的基本信息（包括email）以保证评论及回复的有效性，当前版本0.0.1</span>`
   tippy($info, {
@@ -71,27 +107,4 @@ export default function cmtTextarea(onPostBtn: (this: GlobalEventHandlers, ev: M
   $top.append($textareaEdit)
 
   return $top
-}
-
-const avatarInner = $avatar.innerHTML
-export function setAvatar(html?: string) {
-  if (html === undefined) {
-    $avatar.setAttribute('data-tippy-content', '使用GITHUB账号登录')
-    $avatar.innerHTML = avatarInner
-    return
-  }
-  $avatar.removeAttribute('data-tippy-content')
-  tippy('[data-tippy-content]', {
-    offset: [0, 6],
-    placement: 'auto',
-  })
-  $avatar.innerHTML = html
-}
-
-export function setAvatarBtn(func?: (this: GlobalEventHandlers, ev: MouseEvent) => void) {
-  if (func !== undefined) {
-    $avatar.onclick = func
-    return
-  }
-  $avatar.onclick = null
 }

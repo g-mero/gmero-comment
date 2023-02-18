@@ -39,6 +39,6 @@ export default [{
   external: ['tippy.js'],
 },{
   input: './src/main.ts',
-  output: [{ file: "dist/build/gmero-comment.d.ts", format: "es" }],
+  output: [{ file: "dist/build/gmero-comment.d.ts", format: "cjs" }],
   plugins: [dts()],
 }]
