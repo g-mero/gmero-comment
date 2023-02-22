@@ -28,7 +28,7 @@ export default [{
     }),
     postcss({
       modules: {
-        generateScopedName: "[local]___[hash:base64:5]",
+        generateScopedName: "[local]",
       },
       plugins: [autoprefixer()],
       extract: 'css/index.css',

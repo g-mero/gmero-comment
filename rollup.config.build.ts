@@ -29,6 +29,7 @@ export default [{
     }),
     postcss({
       modules: {
+        // ___[hash:base64:5] [local]
         generateScopedName: "gcss_[hash:base64:5]",
       },
       plugins: [autoprefixer(), cssnano()],
