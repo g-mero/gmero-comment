@@ -1,3 +1,5 @@
+import { HtmlUtil } from './utils'
+
 export function convertIt(content: string) {
   // 匹配转换<link or email>
   function transLinkEmail(str: string) {
@@ -32,6 +34,8 @@ export function convertIt(content: string) {
   }
 
   let output = content
+  // 对内容进行安全编码
+  output = HtmlUtil.htmlEncode(output)
 
   output = transLinks(output) || output
 
