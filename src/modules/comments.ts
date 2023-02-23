@@ -1,72 +1,168 @@
 import { convertIt } from './grammar'
-import { wrapByDiv } from './utils'
+import { timeAgo, wrapByDiv } from './utils'
 
 import styles from '../index.module.scss'
+import { replyTextarea } from './cmt-textarea'
 
-export interface comment_g {
+export interface commentG {
+  id: number
+  userID: number
   nickname: string
-  avatar_url: string
+  avatarUrl: string
   content: string
   likes: number
   replys: number
-  children: comment_g[]
+  isEdited: boolean
+  createAt: string
+  toUserNickname: string
+  toCommentID: number
+  children: commentG[]
 }
 
-const testcomment: comment_g = {
+const testcomment: commentG = {
+  id: 1,
+  userID: 1,
   nickname: 'test1',
-  avatar_url: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
+  avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
   content: 'test',
   likes: 10,
   replys: 2,
+  isEdited: false,
+  toUserNickname: '',
+  createAt: '2023-02-19T17:33:27.1343681+08:00',
+  toCommentID: 0,
   children: [],
 }
 
-const testCommentsChild: comment_g = {
+const testReply: commentG = {
+  id: 1,
+  userID: 3,
+  nickname: 'test3',
+  avatarUrl: 'https://avatars.githubusercontent.com/u/0',
+  content: '<a href="sdsdsd" target="_blank">sdsd</a>',
+  likes: 4,
+  replys: 0,
+  toUserNickname: 'test2',
+  isEdited: true,
+  createAt: '2023-02-19T17:33:27.1343681+08:00',
+  toCommentID: 1,
+  children: [],
+}
+
+const testCommentsChild: commentG = {
+  id: 1,
+  userID: 2,
   nickname: 'test2',
-  avatar_url: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
+  avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
   content: '[点我前往百度](https://baidu.com)',
   likes: 10,
   replys: 2,
-  children: [testcomment, testcomment],
+  isEdited: false,
+  toUserNickname: '',
+  createAt: '2023-02-19T17:33:27.1343681+08:00',
+  toCommentID: 0,
+  children: [testReply, testReply, testReply],
 }
 
 /**
  * 测试用例
  */
-export const testcomments: comment_g[] = [testCommentsChild, testcomment]
+export const testcomments: commentG[] = [testCommentsChild, testcomment, testcomment, testcomment, testcomment, testcomment]
+
+const replyArea = replyTextarea()
+
+const svgLike = `<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
+<path 
+d="M594.176 151.168a34.048 34.048 0 0 0-29.184 10.816c-11.264 13.184-15.872 24.064-21.504 40.064l-1.92 
+5.632c-5.632 16.128-12.8 36.864-27.648 63.232-25.408 44.928-50.304 74.432-86.208 97.024-23.04 14.528-43.648 
+26.368-65.024 32.576v419.648a4569.408 4569.408 0 0 0 339.072-4.672c38.72-2.048 72-21.12 88.96-52.032 
+21.504-39.36 47.168-95.744 63.552-163.008a782.72 782.72 0 0 0 22.528-163.008c0.448-16.832-13.44-32.256-35.328-32.256h-197.312a32 
+32 0 0 1-28.608-46.336l0.192-0.32 0.64-1.344 2.56-5.504c2.112-4.8 5.12-11.776 8.32-20.16 6.592-17.088 13.568-39.04 16.768-60.416 
+4.992-33.344 3.776-60.16-9.344-84.992-14.08-26.688-30.016-33.728-40.512-34.944zM691.84 341.12h149.568c52.736 0 100.864 40.192 
+99.328 98.048a845.888 845.888 0 0 1-24.32 176.384 742.336 742.336 0 0 1-69.632 178.56c-29.184 53.44-84.48 82.304-141.76 85.248-55.68 
+2.88-138.304 5.952-235.712 5.952-96 0-183.552-3.008-244.672-5.76-66.432-3.136-123.392-51.392-131.008-119.872a1380.672 1380.672 0 0 
+1-0.768-296.704c7.68-72.768 70.4-121.792 140.032-121.792h97.728c13.76 0 28.16-5.504 62.976-27.456 24.064-15.104 42.432-35.2 64.512-74.24 
+11.904-21.184 17.408-36.928 22.912-52.8l2.048-5.888c6.656-18.88 14.4-38.4 33.28-60.416a97.984 97.984 0 0 1 85.12-32.768c35.264 4.096 
+67.776 26.88 89.792 68.608 22.208 42.176 21.888 84.864 16 124.352a342.464 342.464 0 0 1-15.424 60.544z m-393.216 
+477.248V405.184H232.96c-40.448 0-72.448 27.712-76.352 64.512a1318.912 1318.912 0 0 0 0.64 282.88c3.904 34.752 32.96 
+61.248 70.4 62.976 20.8 0.96 44.8 1.92 71.04 2.816z" fill="#9499a0">
+</path></svg>`
+
+const svgLikeFill = `<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"><path 
+d="M860.032 341.12h-182.08c7.488-17.408 14.72-38.528 18.048-60.544 5.952-39.872 
+4.992-87.36-18.368-129.088-21.76-38.848-50.304-60.928-83.52-61.376-30.72-0.384-53.888 18.176-65.728 33.408a199.296 199.296 0 0 
+0-32.064 59.264l-1.92 5.184c-5.44 14.976-10.88 29.952-23.04 51.456-19.712 34.816-48.832 56.128-77.696 74.368a391.936 391.936 0 0 
+1-30.976 17.92v552.448a4621.952 4621.952 0 0 0 351.872-5.312c51.264-2.752 100.672-28.544 127.488-76.032 24.32-43.136 55.168-108.16 
+74.368-187.264 20.416-84.16 24.64-152.704 24.576-195.968-0.128-46.336-38.72-78.4-80.96-78.4z m-561.344 541.312V341.12H215.808c-59.712 
+0-113.408 42.048-120.896 104.32a1376 1376 0 0 0 0.64 330.368c7.36 58.688 56.128 100.032 113.024 102.848 25.024 1.28 55.552 2.56 
+90.112 3.712z" fill="#00aeec"></path></svg>`
+
+let lastCilck: HTMLElement | null
 
 /**
  * 生成评论或回复的单个element
  * @param cmt - 评论对象
  * @returns 评论element
  */
-const genOneComment = (cmt: comment_g) => {
+const genOneComment = (
+  cmt: commentG,
+  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void,
+  isReply = false
+) => {
   const $comment = document.createElement('div')
-  $comment.classList.add(styles['d-flex'], styles['single-comment'])
-  $comment.innerHTML = `<div class="${styles['g-comment-avatar']}">
-                    <img src="${cmt.avatar_url}">
+  $comment.classList.add(styles['single-comment'])
+  $comment.innerHTML = `<div class="${styles['d-flex']}"><div class="${styles['g-comment-avatar']}">
+                    <img src="${cmt.avatarUrl}">
                 </div>
                 <div class="${styles['w-100']}">
-                    <div class="${styles['d-flex']}  ${styles['justyfy-content-between']}"><span>${cmt.nickname}</span>
+                    <div class="${styles['d-flex']}  ${styles['justyfy-content-between']}"><span class="nickname">${cmt.nickname}${
+    cmt.toUserNickname !== '' ? `回复@${cmt.toUserNickname}` : ''
+  }</span>
                         <div class="comment-g-options"></div>
                     </div>
-                    <div class="content">${convertIt(cmt.content)}</div>
-                    <div class="bottom ${styles['d-flex']} ${styles['justyfy-content-between']}">
-                        <span>2022-06-24</span>
-                        <div class="reply-likes  ${styles['d-flex']} ${styles['justyfy-content-between']}">
-                            <button class="${styles['btn-icon-text']}"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                                    height="1em" fill="currentColor" class="bi bi-chat-dots-fill" viewBox="0 0 16 16">
-                                    <path
-                                        d="M16 8c0 3.866-3.582 7-8 7a9.06 9.06 0 0 1-2.347-.306c-.584.296-1.925.864-4.181 1.234-.2.032-.352-.176-.273-.362.354-.836.674-1.95.77-2.966C.744 11.37 0 9.76 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" />
-                                </svg> 回复</button>
-                            <button class="${styles['btn-icon-text']}"><svg xmlns="http://www.w3.org/2000/svg" width="1em"
-                                    height="1em" fill="currentColor" class="bi bi-hand-thumbs-up" viewBox="0 0 16 16">
-                                    <path
-                                        d="M8.864.046C7.908-.193 7.02.53 6.956 1.466c-.072 1.051-.23 2.016-.428 2.59-.125.36-.479 1.013-1.04 1.639-.557.623-1.282 1.178-2.131 1.41C2.685 7.288 2 7.87 2 8.72v4.001c0 .845.682 1.464 1.448 1.545 1.07.114 1.564.415 2.068.723l.048.03c.272.165.578.348.97.484.397.136.861.217 1.466.217h3.5c.937 0 1.599-.477 1.934-1.064a1.86 1.86 0 0 0 .254-.912c0-.152-.023-.312-.077-.464.201-.263.38-.578.488-.901.11-.33.172-.762.004-1.149.069-.13.12-.269.159-.403.077-.27.113-.568.113-.857 0-.288-.036-.585-.113-.856a2.144 2.144 0 0 0-.138-.362 1.9 1.9 0 0 0 .234-1.734c-.206-.592-.682-1.1-1.2-1.272-.847-.282-1.803-.276-2.516-.211a9.84 9.84 0 0 0-.443.05 9.365 9.365 0 0 0-.062-4.509A1.38 1.38 0 0 0 9.125.111L8.864.046zM11.5 14.721H8c-.51 0-.863-.069-1.14-.164-.281-.097-.506-.228-.776-.393l-.04-.024c-.555-.339-1.198-.731-2.49-.868-.333-.036-.554-.29-.554-.55V8.72c0-.254.226-.543.62-.65 1.095-.3 1.977-.996 2.614-1.708.635-.71 1.064-1.475 1.238-1.978.243-.7.407-1.768.482-2.85.025-.362.36-.594.667-.518l.262.066c.16.04.258.143.288.255a8.34 8.34 0 0 1-.145 4.725.5.5 0 0 0 .595.644l.003-.001.014-.003.058-.014a8.908 8.908 0 0 1 1.036-.157c.663-.06 1.457-.054 2.11.164.175.058.45.3.57.65.107.308.087.67-.266 1.022l-.353.353.353.354c.043.043.105.141.154.315.048.167.075.37.075.581 0 .212-.027.414-.075.582-.05.174-.111.272-.154.315l-.353.353.353.354c.047.047.109.177.005.488a2.224 2.224 0 0 1-.505.805l-.353.353.353.354c.006.005.041.05.041.17a.866.866 0 0 1-.121.416c-.165.288-.503.56-1.066.56z" />
-                                </svg>${cmt.likes}</button>
-                        </div>
+                    <div class="${styles.content}">${convertIt(cmt.content)}</div>
+                    <div class="${styles.bottom} ${styles['d-flex']}">
+                        <span> ${timeAgo(cmt.createAt)}</span>
+                        <span class="${styles['btn-icon-text']} ${styles['like-btn']}"><i class="${styles.icon}">${svgLike}</i>${
+    cmt.likes
+  }</span>
+                        <span class="${styles['btn-icon-text']} ${styles['reply-btn']}">回复</span>
                     </div>
-                </div>`
+                </div></div>`
+  const $btnReply = $comment.querySelector(`.${styles['reply-btn']}`) as HTMLElement
+  const $btnLike = $comment.querySelector(`.${styles['like-btn']}`) as HTMLElement
+
+  if ($btnReply !== null && $btnLike !== null) {
+    $btnReply.onclick = () => {
+      if (lastCilck === $btnReply) {
+        replyArea.hide()
+        lastCilck = null
+        return
+      }
+      lastCilck = $btnReply
+      replyArea.show()
+      replyArea.setPlaceholder(`回复@${cmt.nickname}`)
+      // 由于回复评论与回复评论下的回复有不同，所以要做区分
+      replyArea.setPostBtn(() => {
+        onReplyPostBtn(replyArea.getValue(), isReply ? cmt.toCommentID : cmt.id, isReply ? cmt.userID : 0)
+        replyArea.clear()
+      })
+
+      $comment.append(replyArea.element)
+    }
+
+    let bool = false
+
+    $btnLike.onclick = () => {
+      if (bool) {
+        $btnLike.innerHTML = `<i class="${styles.icon}">${svgLike}</i>${cmt.likes}`
+        bool = false
+      } else {
+        $btnLike.innerHTML = `<i class="${styles.icon}">${svgLikeFill}</i>${cmt.likes + 1}`
+        bool = true
+      }
+    }
+  }
   return $comment
 }
 
@@ -75,14 +171,14 @@ const genOneComment = (cmt: comment_g) => {
  * @param cmt -评论对象
  * @returns 评论的element
  */
-const genComments = (cmt: comment_g) => {
-  const $comment = wrapByDiv(genOneComment(cmt))
+const genComments = (cmt: commentG, onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void) => {
+  const $comment = wrapByDiv(genOneComment(cmt, onReplyPostBtn))
   $comment.classList.add(styles['a-comment'])
   if (cmt.children.length > 0) {
     const children: Element[] = []
 
     cmt.children.forEach((v) => {
-      children.push(genOneComment(v))
+      children.push(genOneComment(v, onReplyPostBtn, true))
     })
 
     const $tmp = wrapByDiv(...children)
@@ -94,12 +190,7 @@ const genComments = (cmt: comment_g) => {
 }
 
 /**
- * 评论展示区域element的全局变量，方便更新
- */
-const $output = document.createElement('div')
-
-/**
- * 评论展示去顶部的信息栏，显示评论数以及切换显示模式
+ * 顶部的信息栏，显示评论数以及切换显示模式
  */
 const $toolbar = document.createElement('div')
 $toolbar.classList.add(styles['d-flex'], styles['justyfy-content-between'], styles['toolbar-comments'])
@@ -121,19 +212,17 @@ function genToolBar(num: number): Element {
  * @returns element of comments
  *
  */
-export default function cmtShowcase(comments?: comment_g[], total?: number) {
+export default function cmtShowcase(
+  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void,
+  comments?: commentG[],
+  total?: number
+) {
   if (comments === undefined || comments.length < 1 || total === undefined || total === 0) {
-    const $tmp = wrapByDiv(genToolBar(0))
-    $output.innerHTML = $tmp.innerHTML
-  } else {
-    const gcomment: Element[] = []
-    comments.forEach((v) => {
-      gcomment.push(genComments(v))
-    })
-    const $tmp = wrapByDiv(genToolBar(total), ...gcomment)
-
-    $output.innerHTML = $tmp.innerHTML
+    return wrapByDiv(genToolBar(0))
   }
-
-  return $output
+  const gcomment: Element[] = []
+  comments.forEach((v) => {
+    gcomment.push(genComments(v, onReplyPostBtn))
+  })
+  return wrapByDiv(genToolBar(total), ...gcomment)
 }

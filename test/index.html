@@ -12,7 +12,7 @@
 <body>
     <div>test</div>
     <div id="gcomment" style="margin-top: 35px;margin-left: 100px;width: 50%;"></div>
-    
+
 
     <script src="popper.min.js"></script>
     <script src="tippy-bundle.umd.min.js"></script>
@@ -31,6 +31,10 @@
             onPostBtn: function () {
                 console.log(this);
             },
+
+            onReplyPostBtn: function (toCommentID, content, toUserID) {
+                console.log(toCommentID, content, toUserID);
+            }
         })
     </script>
 </body>

@@ -3,7 +3,8 @@ import { HtmlUtil } from './utils'
 export function convertIt(content: string) {
   // 匹配转换<link or email>
   function transLinkEmail(str: string) {
-    const reg = /<(.+?)>/gm
+    // 这里换成实体字符表示<>，因为字符串被encode了
+    const reg = /&lt;(.+?)&gt;/gm
     if (str.search(reg) === -1) return false
 
     const urlreg = /^https?:\/\/([\w-]+\.)+[\w-]+(\/[\w\-./?%&=]*)?$/
@@ -36,7 +37,6 @@ export function convertIt(content: string) {
   let output = content
   // 对内容进行安全编码
   output = HtmlUtil.htmlEncode(output)
-
   output = transLinks(output) || output
 
   output = transLinkEmail(output) || output

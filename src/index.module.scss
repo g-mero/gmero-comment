@@ -22,6 +22,7 @@
     height: auto;
     line-height: inherit;
     padding: 0;
+    user-select: none;
     cursor: pointer;
   }
 
@@ -66,6 +67,25 @@
     }
   }
 
+  .reply-textarea {
+    margin: 1rem;
+    display: flex;
+    // transition: all 0.3s cubic-bezier(0, 1, 0.5, 1);
+    max-height: 3rem;
+    textarea {
+      height: 50px;
+      margin-right: 0.5rem;
+    }
+    .g-comment-btn {
+      border-radius: 5px;
+    }
+    &.close {
+      overflow: hidden;
+      max-height: 0;
+      margin: 0;
+    }
+  }
+
   .g-comment-textarea-tools {
     max-height: 3rem;
     overflow: hidden;
@@ -102,6 +122,36 @@
 
   .single-comment {
     padding-bottom: 0.5rem;
+
+    .nickname {
+      color: #61666d;
+    }
+
+    .content {
+      padding: 0.4rem;
+    }
+
+    .bottom {
+      .reply-btn,
+      .like-btn,
+      span {
+        font-size: 0.85rem;
+        margin-right: 1em;
+        color: #9499a0;
+
+        &.btn-icon-text:hover {
+          color: #00aeec;
+        }
+      }
+
+      i.icon {
+        margin-right: 0.15rem;
+
+        svg {
+          vertical-align: -0.1rem;
+        }
+      }
+    }
   }
 
   .toolbar-comments {
