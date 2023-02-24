@@ -19,6 +19,76 @@
     <script src="gmero-comment.js"></script>
     <script>
         "use strict";
+
+        const testcomment = {
+            id: 1,
+            userID: 1,
+            nickname: 'test1',
+            avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
+            content: 'test',
+            likes: 10,
+            replys: 2,
+            isEdited: false,
+            toUserNickname: '',
+            createAt: '2023-02-19T17:33:27.1343681+08:00',
+            toCommentID: 0,
+            children: [],
+        }
+
+        const testReply = {
+            id: 1,
+            userID: 3,
+            nickname: 'test3',
+            avatarUrl: 'https://avatars.githubusercontent.com/u/0',
+            content: '<a href="sdsdsd" target="_blank">sdsd</a>',
+            likes: 4,
+            replys: 0,
+            toUserNickname: 'test2',
+            isEdited: true,
+            createAt: '2023-02-19T17:33:27.1343681+08:00',
+            toCommentID: 1,
+            children: [],
+        }
+
+        const testNewReply = {
+            id: 100,
+            userID: 3,
+            nickname: 'newReply',
+            avatarUrl: 'https://avatars.githubusercontent.com/u/0',
+            content: 'testReply',
+            likes: 4,
+            replys: 0,
+            toUserNickname: '',
+            isEdited: true,
+            createAt: '2023-02-19T17:33:27.1343681+08:00',
+            toCommentID: 1,
+            children: [],
+        }
+
+        const testCommentsChild = {
+            id: 1,
+            userID: 2,
+            nickname: 'test2',
+            avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
+            content: '[点我前往百度](https://baidu.com)',
+            likes: 10,
+            replys: 2,
+            isEdited: false,
+            toUserNickname: '',
+            createAt: '2023-02-19T17:33:27.1343681+08:00',
+            toCommentID: 0,
+            children: [testReply, testReply, testReply],
+        }
+
+        const nickname = "gmero"
+        const userID = 4
+        const avatarUrl = 'https://avatars.githubusercontent.com/u/0'
+
+        /**
+         * 测试用例
+         */
+        const testcomments = [testCommentsChild, testcomment, testcomment, testcomment, testcomment, testcomment]
+
         var cot = gcomment({
             onAvatarBtn: (e) => {
                 window.open(
@@ -28,14 +98,53 @@
                 )
             },
 
-            onPostBtn: function () {
-                console.log(this);
+            onPostBtn: function (content) {
+                const tmpComment = {
+                    id: 9,
+                    userID: userID,
+                    nickname: nickname,
+                    avatarUrl: avatarUrl,
+                    content: content || 'test comment',
+                    likes: 0,
+                    replys: 0,
+                    isEdited: false,
+                    toUserNickname: '',
+                    createAt: '2023-02-19T17:33:27.1343681+08:00',
+                    toCommentID: 0,
+                    children: []
+                }
+                cot.insertOneComment(tmpComment, undefined, 1);
             },
 
-            onReplyPostBtn: function (toCommentID, content, toUserID) {
-                console.log(toCommentID, content, toUserID);
+            onReplyPostBtn: function (content, toCommentID, toUserID, el) {
+                const type = toUserID == 0 ? 2 : 3
+                let toUserNickname = ''
+                if (toUserID !== 0) {
+                    toUserNickname = el.querySelector('span').innerText
+                }
+                const tmpComment = {
+                    id: 90,
+                    userID: userID,
+                    nickname: nickname,
+                    avatarUrl: avatarUrl,
+                    content: content || 'test comment',
+                    likes: 0,
+                    replys: 0,
+                    isEdited: false,
+                    toUserNickname: toUserNickname,
+                    createAt: '2023-02-19T17:33:27.1343681+08:00',
+                    toCommentID: toCommentID,
+                    children: []
+                }
+                cot.insertOneComment(tmpComment, el, type)
+            },
+
+            onPagiClick: function (pn) {
+                console.log(pn);
             }
         })
+
+        cot.setComments(testcomments, 40)
     </script>
 </body>
 
