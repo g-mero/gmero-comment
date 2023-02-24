@@ -1,5 +1,5 @@
 import tippy from 'tippy.js'
-import { wrapByDiv } from './utils'
+import { removeClassDelay, wrapByDiv } from './utils'
 
 import styles from '../index.module.scss'
 
@@ -20,11 +20,7 @@ export default function cmtTextarea(
   avatarHtmlDefault = avatarDefaultInner,
   defaultTippy = '',
   isReply = false
-): {
-  element: HTMLDivElement
-  setAvatar: (html?: string, typpy?: string) => void
-  setAvatarBtn: (func?: (this: GlobalEventHandlers, ev: MouseEvent) => void) => void
-} {
+) {
   const $textarea = document.createElement('textarea')
   $textarea.setAttribute('placeholder', '留下你的评论...')
 
@@ -35,6 +31,11 @@ export default function cmtTextarea(
   // 点击确认按钮
   $btnConfirm.onclick = () => {
     onPostBtn($textarea.value)
+  }
+
+  function disable(opt: boolean) {
+    $textarea.disabled = opt
+    $btnConfirm.disabled = opt
   }
 
   // 回复框
@@ -49,6 +50,7 @@ export default function cmtTextarea(
       setAvatarBtn: () => {
         return 0
       },
+      disable,
     }
   }
 
@@ -108,6 +110,7 @@ export default function cmtTextarea(
     }
     $avatar.onclick = null
   }
+
   /* 头像区域处理 */
   // 设置头像默认内容
   $avatar.innerHTML = avatarHtmlDefault
@@ -142,6 +145,7 @@ export default function cmtTextarea(
     element: outElement,
     setAvatar,
     setAvatarBtn,
+    disable,
   }
 }
 
@@ -154,6 +158,7 @@ export function replyTextarea() {
     '',
     true
   ).element
+  $res.classList.add(styles.close)
   const $textarea = $res.querySelector('textarea') as HTMLTextAreaElement
   const $btnConfirm = $res.querySelector('button') as HTMLButtonElement
   function setPlaceholder(str: string) {
@@ -166,7 +171,7 @@ export function replyTextarea() {
     $res.classList.add(styles.close)
   }
   function show() {
-    $res.classList.remove(styles.close)
+    removeClassDelay(styles.close, $res)
   }
   function getValue() {
     return $textarea.value

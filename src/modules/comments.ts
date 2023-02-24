@@ -1,5 +1,5 @@
 import { convertIt } from './grammar'
-import { timeAgo, wrapByDiv } from './utils'
+import { getQueryString, timeAgo, wrapByDiv } from './utils'
 
 import styles from '../index.module.scss'
 import { replyTextarea } from './cmt-textarea'
@@ -19,58 +19,12 @@ export interface commentG {
   children: commentG[]
 }
 
-const testcomment: commentG = {
-  id: 1,
-  userID: 1,
-  nickname: 'test1',
-  avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
-  content: 'test',
-  likes: 10,
-  replys: 2,
-  isEdited: false,
-  toUserNickname: '',
-  createAt: '2023-02-19T17:33:27.1343681+08:00',
-  toCommentID: 0,
-  children: [],
-}
-
-const testReply: commentG = {
-  id: 1,
-  userID: 3,
-  nickname: 'test3',
-  avatarUrl: 'https://avatars.githubusercontent.com/u/0',
-  content: '<a href="sdsdsd" target="_blank">sdsd</a>',
-  likes: 4,
-  replys: 0,
-  toUserNickname: 'test2',
-  isEdited: true,
-  createAt: '2023-02-19T17:33:27.1343681+08:00',
-  toCommentID: 1,
-  children: [],
-}
-
-const testCommentsChild: commentG = {
-  id: 1,
-  userID: 2,
-  nickname: 'test2',
-  avatarUrl: 'https://pic1.zhimg.com/v2-807cb31dd5c24356fbe4caa5cdc35f43_l.jpg?source=06d4cd63',
-  content: '[点我前往百度](https://baidu.com)',
-  likes: 10,
-  replys: 2,
-  isEdited: false,
-  toUserNickname: '',
-  createAt: '2023-02-19T17:33:27.1343681+08:00',
-  toCommentID: 0,
-  children: [testReply, testReply, testReply],
-}
-
 /**
- * 测试用例
+ * reply的输入框，这里只生成一个，效果更好
  */
-export const testcomments: commentG[] = [testCommentsChild, testcomment, testcomment, testcomment, testcomment, testcomment]
-
 const replyArea = replyTextarea()
 
+// 点赞的两个图标
 const svgLike = `<svg class="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em">
 <path 
 d="M594.176 151.168a34.048 34.048 0 0 0-29.184 10.816c-11.264 13.184-15.872 24.064-21.504 40.064l-1.92 
@@ -104,10 +58,9 @@ let lastCilck: HTMLElement | null
  * @param cmt - 评论对象
  * @returns 评论element
  */
-const genOneComment = (
+export const genOneComment = (
   cmt: commentG,
-  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void,
-  isReply = false
+  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void
 ) => {
   const $comment = document.createElement('div')
   $comment.classList.add(styles['single-comment'])
@@ -115,14 +68,14 @@ const genOneComment = (
                     <img src="${cmt.avatarUrl}">
                 </div>
                 <div class="${styles['w-100']}">
-                    <div class="${styles['d-flex']}  ${styles['justyfy-content-between']}"><span class="nickname">${cmt.nickname}${
-    cmt.toUserNickname !== '' ? `回复@${cmt.toUserNickname}` : ''
-  }</span>
+                    <div class="${styles['d-flex']}  ${styles['justyfy-content-between']}"><div><span class="${styles.nickname}">${
+    cmt.nickname
+  }</span>${cmt.toUserNickname !== '' ? `回复<span class="${styles['to-nickname']}">@${cmt.toUserNickname}</span>` : ''}</div>
                         <div class="comment-g-options"></div>
                     </div>
                     <div class="${styles.content}">${convertIt(cmt.content)}</div>
                     <div class="${styles.bottom} ${styles['d-flex']}">
-                        <span> ${timeAgo(cmt.createAt)}</span>
+                        <span> ${timeAgo(cmt.createAt)} ${cmt.isEdited ? '(修改过)' : ''}</span>
                         <span class="${styles['btn-icon-text']} ${styles['like-btn']}"><i class="${styles.icon}">${svgLike}</i>${
     cmt.likes
   }</span>
@@ -134,21 +87,23 @@ const genOneComment = (
 
   if ($btnReply !== null && $btnLike !== null) {
     $btnReply.onclick = () => {
+      replyArea.hide()
       if (lastCilck === $btnReply) {
-        replyArea.hide()
         lastCilck = null
         return
       }
       lastCilck = $btnReply
-      replyArea.show()
       replyArea.setPlaceholder(`回复@${cmt.nickname}`)
       // 由于回复评论与回复评论下的回复有不同，所以要做区分
       replyArea.setPostBtn(() => {
-        onReplyPostBtn(replyArea.getValue(), isReply ? cmt.toCommentID : cmt.id, isReply ? cmt.userID : 0)
+        // 这里使用toCommentID判断回复对象是评论还是回复 0:是评论 1:是回复
+        // 如果是评论则回复为根回复，toCommentID为回复对象的ID，toUserID为0
+        // 如果是回复则回复为子回复，toCommentID为根回复的回复对象的ID（即cmt.toCommentID）,toUserID为根回复的UserID
+        onReplyPostBtn(replyArea.getValue(), cmt.toCommentID || cmt.id, cmt.toCommentID && cmt.userID, $comment)
         replyArea.clear()
       })
-
       $comment.append(replyArea.element)
+      replyArea.show()
     }
 
     let bool = false
@@ -167,25 +122,28 @@ const genOneComment = (
 }
 
 /**
- * 生产当前评论的评论内容及回复
+ * 生成当前评论的评论内容及回复
  * @param cmt -评论对象
  * @returns 评论的element
  */
-const genComments = (cmt: commentG, onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void) => {
+const genComments = (
+  cmt: commentG,
+  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void
+) => {
   const $comment = wrapByDiv(genOneComment(cmt, onReplyPostBtn))
   $comment.classList.add(styles['a-comment'])
+  const $childReplys = document.createElement('div')
+  $childReplys.classList.add(styles['children-comments'])
   if (cmt.children.length > 0) {
     const children: Element[] = []
 
     cmt.children.forEach((v) => {
-      children.push(genOneComment(v, onReplyPostBtn, true))
+      children.push(genOneComment(v, onReplyPostBtn))
     })
 
-    const $tmp = wrapByDiv(...children)
-    $tmp.classList.add(styles['children-comments'])
-
-    $comment.append($tmp)
+    $childReplys.append(...children)
   }
+  $comment.append($childReplys)
   return $comment
 }
 
@@ -201,10 +159,70 @@ $toolbar.classList.add(styles['d-flex'], styles['justyfy-content-between'], styl
  * @returns $toolbar
  */
 function genToolBar(num: number): Element {
-  $toolbar.innerHTML = `<div>${num} 条评论</div><div></div>`
+  $toolbar.innerHTML = `<div class="${styles['d-flex']}">评论<i class="${styles['total-num']}">${num}</i></div><div></div>`
   return $toolbar
 }
 
+/**
+ * 生成分页
+ * @param num 页总数
+ * @returns element
+ */
+function genPagination(num: number, onPagiClick: (pageNum: number) => void) {
+  const $pagination = document.createElement('ol')
+  const current = Number(getQueryString('cmt_pn')) || 1
+
+  if (num <= 7) {
+    for (let i = 1; i <= num; i += 1) {
+      const $tmp = document.createElement('li')
+      $tmp.innerText = i.toString()
+      if (current === i) {
+        $tmp.classList.add(styles.current)
+      }
+      $tmp.onclick = () => {
+        onPagiClick(i)
+      }
+      $pagination.append($tmp)
+    }
+  }
+  const $res = wrapByDiv($pagination)
+  $res.classList.add(styles.pagination)
+  return $res
+}
+
+/**
+ * 评论展示区域
+ */
+const $commentsArea = document.createElement('div')
+$commentsArea.classList.add(styles['comments-area'])
+
+function genLoading() {
+  const $res = document.createElement('div')
+  $res.classList.add(styles.loading, styles['d-none'])
+  function close() {
+    $res.classList.add(styles['d-none'])
+    $commentsArea.style.filter = 'blur(0)'
+    replyArea.hide()
+  }
+  function show() {
+    $res.classList.remove(styles['d-none'])
+    $commentsArea.style.filter = 'blur(3px)'
+  }
+
+  return {
+    element: $res,
+    close,
+    show,
+  }
+}
+
+const loading = genLoading()
+
+/**
+ * 输出的element对象，方便主函数对其进行更新
+ */
+const $resultCommentsShowcase = document.createElement('div')
+$resultCommentsShowcase.style.position = 'relative'
 /**
  * 生成评论展示区域
  *
@@ -212,17 +230,33 @@ function genToolBar(num: number): Element {
  * @returns element of comments
  *
  */
+
 export default function cmtShowcase(
-  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number) => void,
+  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void,
+  onPagiClick: (pageNum: number) => void,
   comments?: commentG[],
   total?: number
 ) {
+  // 清空
+  $resultCommentsShowcase.innerHTML = ''
+  $commentsArea.innerHTML = ''
   if (comments === undefined || comments.length < 1 || total === undefined || total === 0) {
-    return wrapByDiv(genToolBar(0))
+    $resultCommentsShowcase.append(genToolBar(0), $commentsArea, loading.element)
+  } else {
+    const gcomment: Element[] = []
+    comments.forEach((v) => {
+      gcomment.push(genComments(v, onReplyPostBtn))
+    })
+    $commentsArea.append(...gcomment)
+    $resultCommentsShowcase.append(
+      genToolBar(total),
+      $commentsArea,
+      genPagination(Math.ceil(total / comments.length), onPagiClick),
+      loading.element
+    )
   }
-  const gcomment: Element[] = []
-  comments.forEach((v) => {
-    gcomment.push(genComments(v, onReplyPostBtn))
-  })
-  return wrapByDiv(genToolBar(total), ...gcomment)
+  return {
+    element: $resultCommentsShowcase,
+    loading,
+  }
 }

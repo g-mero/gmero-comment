@@ -7,6 +7,12 @@ export function wrapByDiv(...el: Element[]) {
   return $wrap
 }
 
+export function removeClassDelay(classStr: string, el: Element) {
+  setTimeout(() => {
+    el.classList.remove(classStr)
+  }, 10)
+}
+
 /**
  * HTML工具，实现编码解码等功能
  */
@@ -19,9 +25,9 @@ export const HtmlUtil = {
   htmlEncode(html: string) {
     // 1.首先动态创建一个容器标签元素，如DIV
     const temp = document.createElement('div')
-    // 2.然后将要转换的字符串设置为这个元素的innerText(ie支持)或者textContent(火狐，google支持)
+    // 2.然后将要转换的字符串设置为这个元素的innerText
     temp.innerText = html
-    // 3.最后返回这个元素的innerHTML，即得到经过HTML编码转换的字符串了
+    // 3.最后返回这个元素的innerHTML
     const output = temp.innerHTML
     return output
   },
@@ -33,9 +39,9 @@ export const HtmlUtil = {
   htmlDecode(text: string) {
     // 1.首先动态创建一个容器标签元素，如DIV
     const temp = document.createElement('div')
-    // 2.然后将要转换的字符串设置为这个元素的innerHTML(ie，火狐，google都支持)
+    // 2.然后将要转换的字符串设置为这个元素的innerHTML
     temp.innerHTML = text
-    // 3.最后返回这个元素的innerText(ie支持)或者textContent(火狐，google支持)，即得到经过HTML解码的字符串了。
+    // 3.最后返回这个元素的innerText
     const output = temp.innerText
     return output
   },
@@ -57,4 +63,18 @@ export function timeAgo(time: string): string {
   tmp = now.getSeconds() - past.getSeconds()
   if (tmp > 0) return `${tmp}秒前`
   return '刚刚'
+}
+
+export function getQueryString(name: string): string {
+  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
+  const r = window.location.search.substring(1).match(reg)
+  if (r != null) {
+    return decodeURIComponent(r[2])
+  }
+  return ''
+}
+
+export function setUrl(page: number) {
+  const url = `${window.location.pathname}?cmt_pn=${page}`
+  window.history.pushState({ url, title: document.title }, document.title, url)
 }
