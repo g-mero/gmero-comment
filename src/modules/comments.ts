@@ -171,9 +171,15 @@ function genToolBar(num: number): Element {
 function genPagination(num: number, onPagiClick: (pageNum: number) => void) {
   const $pagination = document.createElement('ol')
   const current = Number(getQueryString('cmt_pn')) || 1
+  const maxPages = 7
+  const centerPages = maxPages - 4
+  const avaPages = centerPages + 2
+  // 这里的offset是中间为偶数时右边的偏移量
+  const offsetPages = Math.floor((centerPages - 1) / 2)
 
-  if (num <= 7) {
-    for (let i = 1; i <= num; i += 1) {
+  function genPagiByNum(end: number, start = 1) {
+    const pages: HTMLElement[] = []
+    for (let i = start; i <= end; i += 1) {
       const $tmp = document.createElement('li')
       $tmp.innerText = i.toString()
       if (current === i) {
@@ -182,8 +188,31 @@ function genPagination(num: number, onPagiClick: (pageNum: number) => void) {
       $tmp.onclick = () => {
         onPagiClick(i)
       }
-      $pagination.append($tmp)
+      pages.push($tmp)
     }
+    return pages
+  }
+
+  function dots() {
+    const $dots = document.createElement('li')
+    $dots.innerText = '...'
+    return $dots
+  }
+
+  if (num <= maxPages) {
+    $pagination.append(...genPagiByNum(num))
+  } else if (current < avaPages) {
+    $pagination.append(...genPagiByNum(avaPages), dots(), ...genPagiByNum(num, num))
+  } else if (current > num - avaPages + 1) {
+    $pagination.append(...genPagiByNum(1), dots(), ...genPagiByNum(num, num - avaPages + 1))
+  } else {
+    $pagination.append(
+      ...genPagiByNum(1),
+      dots(),
+      ...genPagiByNum(current + offsetPages, current - (centerPages - offsetPages - 1)),
+      dots(),
+      ...genPagiByNum(num, num)
+    )
   }
   const $res = wrapByDiv($pagination)
   $res.classList.add(styles.pagination)
@@ -251,7 +280,8 @@ export default function cmtShowcase(
     $resultCommentsShowcase.append(
       genToolBar(total),
       $commentsArea,
-      genPagination(Math.ceil(total / comments.length), onPagiClick),
+      // Math.ceil(total / comments.length)
+      genPagination(50, onPagiClick),
       loading.element
     )
   }
