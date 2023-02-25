@@ -78,6 +78,8 @@ export default function gcomment(config: {
     return undefined
   }
   $commentArea.classList.add(styles['gcomment-main'])
+  // 清空区域内容
+  $commentArea.innerHTML = ''
   // 处理结束
 
   // 生成评论编辑区域
@@ -111,7 +113,7 @@ export default function gcomment(config: {
           const $tmp = document.createElement('div')
           $tmp.classList.add(styles['children-comments'])
           const $aCommnet = wrapByDiv($comment, $tmp)
-          const $totalNum = $toobar.querySelector('i.total-num')
+          const $totalNum = $toobar.querySelector(`i.${styles['total-num']}`)
           if ($totalNum !== null) {
             const total = Number($totalNum.innerHTML) + 1
             $totalNum.innerHTML = total.toString()
