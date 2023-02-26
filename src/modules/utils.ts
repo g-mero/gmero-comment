@@ -50,11 +50,14 @@ export const HtmlUtil = {
 export function timeAgo(time: string): string {
   const past = new Date(time)
   const now = new Date(Date.now())
+
   let tmp = now.getFullYear() - past.getFullYear()
+
   if (tmp > 0) return `${tmp}年前`
   tmp = now.getMonth() - past.getMonth()
   if (tmp > 0) return `${tmp}个月前`
-  tmp = now.getDay() - past.getDay()
+  // fix：getDay是周几，Date才是几日
+  tmp = now.getDate() - past.getDate()
   if (tmp > 0) return `${tmp}天前`
   tmp = now.getHours() - past.getHours()
   if (tmp > 0) return `${tmp}小时前`
@@ -63,18 +66,4 @@ export function timeAgo(time: string): string {
   tmp = now.getSeconds() - past.getSeconds()
   if (tmp > 0) return `${tmp}秒前`
   return '刚刚'
-}
-
-export function getQueryString(name: string): string {
-  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i')
-  const r = window.location.search.substring(1).match(reg)
-  if (r != null) {
-    return decodeURIComponent(r[2])
-  }
-  return ''
-}
-
-export function setUrl(page: number) {
-  const url = `${window.location.pathname}?cmt_pn=${page}`
-  window.history.pushState({ url, title: document.title }, document.title, url)
 }
