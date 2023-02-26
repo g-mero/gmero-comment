@@ -89,15 +89,8 @@
          */
         const testcomments = [testCommentsChild, testcomment, testcomment, testcomment, testcomment, testcomment]
 
-        var cot = gcomment({
-            onAvatarBtn: (e) => {
-                window.open(
-                    'https://www.baidu.com',
-                    'aqcoder.com-login-github',
-                    'modal=yes,toolbar=no,titlebar=no,menuba=no,location=no,top=200,left=500,width=600,height=400'
-                )
-            },
-
+        var cot = {
+            avatarTippy: 'aaaaaa',
             onPostBtn: function (content) {
                 const tmpComment = {
                     id: 9,
@@ -113,7 +106,7 @@
                     toCommentID: 0,
                     children: []
                 }
-                cot.insertOneComment(tmpComment, undefined, 1);
+                Gcmt.insertOneComment(tmpComment, undefined, 1);
             },
 
             onReplyPostBtn: function (content, toCommentID, toUserID, el) {
@@ -136,15 +129,17 @@
                     toCommentID: toCommentID,
                     children: []
                 }
-                cot.insertOneComment(tmpComment, el, type)
+                Gcmt.insertOneComment(tmpComment, el, type)
             },
 
             onPagiClick: function (pn) {
                 console.log(pn);
             }
-        })
+        }
 
-        cot.setComments(testcomments, 40)
+
+        Gcmt.init(cot)
+        Gcmt.setComments(testcomments, 40, 7, 4)
     </script>
 </body>
 

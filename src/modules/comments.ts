@@ -1,5 +1,5 @@
 import { convertIt } from './grammar'
-import { getQueryString, timeAgo, wrapByDiv } from './utils'
+import { timeAgo, wrapByDiv } from './utils'
 
 import styles from '../index.module.scss'
 import { replyTextarea } from './cmt-textarea'
@@ -168,9 +168,9 @@ function genToolBar(num: number): Element {
  * @param num 页总数
  * @returns element
  */
-function genPagination(num: number, onPagiClick: (pageNum: number) => void) {
+function genPagination(num: number, currentPage: number, onPagiClick: (pageNum: number) => void) {
   const $pagination = document.createElement('ol')
-  const current = Number(getQueryString('cmt_pn')) || 1
+  const current = currentPage || 1
   const maxPages = 7
   const centerPages = maxPages - 4
   const avaPages = centerPages + 2
@@ -264,7 +264,9 @@ export default function cmtShowcase(
   onReplyPostBtn: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void,
   onPagiClick: (pageNum: number) => void,
   comments?: commentG[],
-  total?: number
+  total?: number,
+  pages?: number,
+  pagenum?: number
 ) {
   // 清空
   $resultCommentsShowcase.innerHTML = ''
@@ -281,7 +283,7 @@ export default function cmtShowcase(
       genToolBar(total),
       $commentsArea,
       // Math.ceil(total / comments.length)
-      genPagination(50, onPagiClick),
+      genPagination(pages || 1, pagenum || 1, onPagiClick),
       loading.element
     )
   }

@@ -12,7 +12,7 @@ export default [{
   output: {
     file: './dist/gmero-comment.js',
     format: 'iife',
-    name: 'gcomment',
+    name: 'Gcmt',
     sourcemap: true,
     globals: { 'tippy.js': 'tippy' },
   },

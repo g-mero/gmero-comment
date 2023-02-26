@@ -5,15 +5,7 @@ import cmtShowcase, { commentG, genOneComment } from './modules/comments'
 import styles from './index.module.scss'
 import { removeClassDelay, wrapByDiv } from './modules/utils'
 
-/**
- * 核心函数，返回一个控制对象
- * @param config 配置对象
- * @returns 一个包含了几个方法的对象
- */
-export default function gcomment(config: {
-  /**
-   * 绑定的Dom的id，默认是gcomment
-   */
+interface CONFType {
   elid?: string
   /**
    * 左侧头像区域的默认显示（未登录时候的显示图像）
@@ -28,7 +20,7 @@ export default function gcomment(config: {
    * @param content textarea的内容
    * @returns void
    */
-  onPostBtn: (content: string) => void // 发送评论按钮
+  onPostBtn?: (content: string) => void // 发送评论按钮
   /**
    * 点击删除按钮的触发函数
    * @param commentID 评论的ID唯一标识
@@ -50,7 +42,7 @@ export default function gcomment(config: {
    * @param element 回复目标的Dom对象，用于动态更新
    * @returns void
    */
-  onReplyPostBtn: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void // 回复评论
+  onReplyPostBtn?: (content: string, toCommentID: number, toUserID: number, element: HTMLDivElement) => void // 回复评论
   /**
    * 点击喜欢按钮的触发函数
    * @param commentID 评论ID
@@ -63,19 +55,73 @@ export default function gcomment(config: {
    * @param pageNum 页码
    * @returns void
    */
-  onPagiClick: (pageNum: number) => void
-}) {
-  // 配置项初始化处理
-  const errorMsgInitFail = 'error: 关键项没有设置 comment 初始化失败'
-  if (config === undefined || config.onPostBtn === undefined || config.onReplyPostBtn === undefined || config.onPagiClick === undefined) {
-    console.error(errorMsgInitFail)
-    return undefined
-  }
+  onPagiClick?: (pageNum: number) => void
+}
 
-  const $commentArea = document.getElementById(config.elid || 'gcomment')
+/**
+ * 默认的配置
+ */
+const DEFAULT_CONFIG = {
+  elid: 'gcomment',
+  defaultAvatarHtml: '',
+  avatarTippy: '',
+  onDeleteBtn() {
+    return false
+  },
+  onLikeBtn() {
+    return false
+  },
+  onPagiClick() {
+    return false
+  },
+  onPostBtn() {
+    return false
+  },
+  onReplyPostBtn() {
+    return false
+  },
+  onUpdateConfirmBtn() {
+    return false
+  },
+}
+
+interface outObjectType {
+  init: (conf: CONFType) => void
+  /**
+   * 评论区域的Dom对象
+   */
+  element: HTMLElement
+  /**
+   * 设置右侧头像区域的内容
+   */
+  setAvatar: (html?: string, tippyContent?: string) => void
+  /**
+   * 设置点击头像的触发函数，可空
+   */
+  setAvatarBtn: (func?: ((this: GlobalEventHandlers, ev: MouseEvent) => void) | undefined) => void
+  /**
+   * 设置评论展示区域的内容
+   * @param comments 评论组
+   * @param total 总数用于分页
+   */
+  setComments: (comments?: commentG[], total?: number, pages?: number, currentPage?: number) => void
+  /**
+   * 生成一个评论的element
+   * @param cmt 评论对象
+   */
+  insertOneComment: (cmt: commentG, el: Element, type: number) => void
+  loading: (bool: boolean) => void
+}
+
+/**
+ * 核心函数，返回一个控制对象
+ * @returns 一个包含了几个方法的对象
+ */
+function gComment(CONF = DEFAULT_CONFIG) {
+  let $commentArea = document.getElementById(CONF.elid)
   if ($commentArea === null) {
     console.error('没有找到element')
-    return undefined
+    $commentArea = document.createElement('div')
   }
   $commentArea.classList.add(styles['gcomment-main'])
   // 清空区域内容
@@ -83,15 +129,15 @@ export default function gcomment(config: {
   // 处理结束
 
   // 生成评论编辑区域
-  const editor = cmtTextarea(config.onPostBtn, config.defaultAvatarHtml, config.avatarTippy)
+  const editor = cmtTextarea(CONF.onPostBtn, CONF.defaultAvatarHtml, CONF.avatarTippy)
   $commentArea.append(editor.element)
 
   // 评论展示区域
-  const commentShowcase = cmtShowcase(config.onReplyPostBtn, config.onPagiClick, [], 0)
+  const commentShowcase = cmtShowcase(CONF.onReplyPostBtn, CONF.onPagiClick, [], 0)
   $commentArea.append(commentShowcase.element)
 
-  const setComments = (comments?: commentG[], total?: number) => {
-    return cmtShowcase(config.onReplyPostBtn, config.onPagiClick, comments, total)
+  const setComments = (comments?: commentG[], total?: number, pages = 1, currentPage = 1) => {
+    cmtShowcase(CONF.onReplyPostBtn, CONF.onPagiClick, comments, total, pages, currentPage)
   }
 
   /**
@@ -103,7 +149,7 @@ export default function gcomment(config: {
    */
   const insertOneComment = (cmt: commentG, el: Element, type: number) => {
     if (![1, 2, 3].includes(type)) return
-    const $comment = genOneComment(cmt, config.onReplyPostBtn)
+    const $comment = genOneComment(cmt, CONF.onReplyPostBtn)
     const { classList } = $comment
     classList.add(styles['new-comment'])
     switch (type) {
@@ -159,31 +205,44 @@ export default function gcomment(config: {
     }
   }
 
-  // 返回一个包含了基本方法的对象
-  return {
-    /**
-     * 评论区域的Dom对象
-     */
+  const output = {
     element: $commentArea,
-    /**
-     * 设置右侧头像区域的内容
-     */
     setAvatar: editor.setAvatar,
-    /**
-     * 设置点击头像的触发函数，可空
-     */
     setAvatarBtn: editor.setAvatarBtn,
-    /**
-     * 设置评论展示区域的内容
-     * @param comments 评论组
-     * @param total 总数用于分页
-     */
     setComments,
-    /**
-     * 生成一个评论的element
-     * @param cmt 评论对象
-     */
     insertOneComment,
     loading,
   }
+
+  // 返回一个包含了基本方法的对象
+  return output
 }
+
+const Gcmt: outObjectType = {
+  init(conf) {
+    const defaults = DEFAULT_CONFIG
+    // 这里使用默认配置的副本，因为assign会改变target
+    const tmpc = Object.assign(defaults, conf)
+    const tmp = gComment(tmpc)
+    // 这里直接修改输出项
+    Object.assign(Gcmt, tmp)
+  },
+  element: document.createElement('div'),
+  setAvatar() {
+    return false
+  },
+  setAvatarBtn() {
+    return false
+  },
+  setComments() {
+    return false
+  },
+  insertOneComment() {
+    return false
+  },
+  loading() {
+    return false
+  },
+}
+
+export default Gcmt
