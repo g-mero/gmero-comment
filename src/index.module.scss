@@ -255,14 +255,3 @@
     }
   }
 }
-
-:global {
-  // tooltips箭头变小
-  .tippy-box > .tippy-arrow::before {
-    transform: scale(0.7);
-  }
-
-  .tippy-box {
-    font-size: 0.7rem;
-  }
-}
